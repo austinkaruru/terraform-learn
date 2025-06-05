@@ -9,7 +9,7 @@ terraform {
 
 provider "aws" {
     region = "eu-north-1"
-    
+  
 }
 
 
@@ -211,6 +211,24 @@ resource "aws_instance" "myapp-server" {
   associate_public_ip_address = true
   # The name of the SSH key pair to use for connecting to the instance.
   key_name = aws_key_pair.ssh-key.key_name
+
+  # user_data = base64encode(<<-EOF
+  #   #!/bin/bash
+  #   sudo yum update -y
+  #   sudo yum install -y docker
+  #   sudo systemctl start docker
+  #   sudo systemctl enable docker
+  #   sudo usermod -aG docker ec2-user
+    
+  #   # Wait for docker to be ready
+  #   sleep 10
+    
+  #   # Run nginx container
+  #   sudo docker run -d -p 8080:80 --name nginx-server nginx
+  # EOF
+  # )
+
+  user_data = file("entry-script.sh")
   tags = {
     # Naming the EC2 instance.
     Name = "${var.env_prefix}-server"
