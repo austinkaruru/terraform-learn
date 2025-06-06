@@ -19,9 +19,9 @@ variable "vpc_cidr_block" {} # The CIDR block for the VPC, defining its IP addre
 variable "subnet_cidr_block" {}
 variable "avail_zone" {}
 variable "env_prefix" {}
-variable "my-ip" {} # Used for restricting SSH access to a specific IP.
+variable "anywhere" {} # Used for restricting SSH access to a specific IP.
 variable "instance_type" {} # Specifies the EC2 instance type (e.g., t2.micro).
-variable "public_key" {} # Your SSH public key for secure access to EC2.
+variable "public_key_location" {} # Your SSH public key for secure access to EC2.
 
 
 # --- VPC (Virtual Private Cloud) Configuration ---
@@ -121,7 +121,7 @@ resource "aws_default_security_group" "default-sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.my-ip]
+    cidr_blocks = [var.anywhere]
   }
 
   # Inbound rule: Allows HTTP access (port 8080) from anywhere (0.0.0.0/0).
@@ -129,7 +129,7 @@ resource "aws_default_security_group" "default-sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.anywhere]
   }
 
   # Outbound rule: Allows all outbound traffic from instances associated with this security group.
@@ -137,7 +137,7 @@ resource "aws_default_security_group" "default-sg" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1" # -1 means all protocols
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.anywhere]
     prefix_list_ids = []
   }
 
@@ -190,7 +190,7 @@ resource "aws_key_pair" "ssh-key" {
   # The name for the key pair.
   key_name   = "server-key"
   # Your SSH public key content.
-  public_key = var.public_key
+  public_key = file(var.public_key_location)
 }
 
 # --- EC2 Instance Configuration ---
