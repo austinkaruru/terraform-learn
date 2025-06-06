@@ -9,7 +9,7 @@ terraform {
 
 provider "aws" {
     region = "eu-north-1"
-  
+   
 }
 
 
@@ -19,9 +19,10 @@ variable "vpc_cidr_block" {} # The CIDR block for the VPC, defining its IP addre
 variable "subnet_cidr_block" {}
 variable "avail_zone" {}
 variable "env_prefix" {}
-variable "my-ip" {} # Used for restricting SSH access to a specific IP.
+variable "anywhere" {} # Used for restricting SSH access to a specific IP.
 variable "instance_type" {} # Specifies the EC2 instance type (e.g., t2.micro).
-variable "public_key" {} # Your SSH public key for secure access to EC2.
+variable "public_key_location" {} # Your SSH public key for secure access to EC2.
+variable "private_key_location" {} # Your SSH private key for secure access to EC2.
 
 
 # --- VPC (Virtual Private Cloud) Configuration ---
@@ -121,7 +122,7 @@ resource "aws_default_security_group" "default-sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.my-ip]
+    cidr_blocks = [var.anywhere]
   }
 
   # Inbound rule: Allows HTTP access (port 8080) from anywhere (0.0.0.0/0).
@@ -129,7 +130,7 @@ resource "aws_default_security_group" "default-sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.anywhere]
   }
 
   # Outbound rule: Allows all outbound traffic from instances associated with this security group.
@@ -190,7 +191,7 @@ resource "aws_key_pair" "ssh-key" {
   # The name for the key pair.
   key_name   = "server-key"
   # Your SSH public key content.
-  public_key = var.public_key
+  public_key = file(var.public_key_location)
 }
 
 # --- EC2 Instance Configuration ---
@@ -228,7 +229,27 @@ resource "aws_instance" "myapp-server" {
   # EOF
   # )
 
-  user_data = file("entry-script.sh")
+  #user_data = file("entry-script.sh")
+
+  connection {
+    type = "ssh"
+    host = self.public_ip
+    user = "ec2-user"
+    private_key = file(var.private_key_location)
+  }
+
+  provisioner "file" {
+    source = "entry-script.sh"
+    destination = "/home/ec2-user/entry-script-on-ec2.sh"
+    
+  }
+  provisioner "remote-exec" {
+     script = "entry-script.sh"
+  }
+
+  provisioner "local-exec" {
+    command = "echo ${self.public_ip} > output.txt"
+  }
   tags = {
     # Naming the EC2 instance.
     Name = "${var.env_prefix}-server"
