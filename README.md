@@ -1,52 +1,52 @@
-# AWS EC2 Instance Deployment with Terraform
+Terraform for AWS EKS Cluster
 
-This repository contains Terraform code to deploy a basic web server (EC2 instance) within a custom Virtual Private Cloud (VPC) on Amazon Web Services (AWS). It sets up the necessary networking components, including a VPC, subnet, internet gateway, and security group, along with an EC2 instance to host a web application (e.g., on port 8080).
+This repository contains Terraform code to provision and manage a foundational AWS environment, including a Virtual Private Cloud (VPC) and an Elastic Kubernetes Service (EKS) cluster.
 
-## Table of Contents
+## About This Project
 
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Usage](#usage)
-  - [1. Configure AWS Credentials](#1-configure-aws-credentials)
-  - [2. Clone the Repository](#2-clone-the-repository)
-  - [3. Define Variables](#3-define-variables)
-  - [4. Initialize Terraform](#4-initialize-terraform)
-  - [5. Plan the Deployment](#5-plan-the-deployment)
-  - [6. Apply the Deployment](#6-apply-the-deployment)
-  - [7. Destroy the Resources](#7-destroy-the-resources)
-- [Key Components](#key-components)
-- [Security Considerations](#security-considerations)
-- [Outputs](#outputs)
-- [Contributing](#contributing)
-- [License](#license)
+This project serves as a practical example of using Terraform to implement Infrastructure as Code (IaC). It automates the setup of a scalable and secure Kubernetes environment on AWS, suitable for deploying containerized applications.
 
-## Features
+### Key Features
 
-* **Custom VPC:** Deploys resources within a dedicated and isolated network.
-* **Single Subnet:** Creates a public subnet for the EC2 instance.
-* **Internet Gateway:** Enables internet connectivity for the VPC.
-* **Default Route Table Configuration:** Configures the default route table to allow outbound internet access.
-* **Security Group:** Configures a security group to allow SSH (port 22) from a specified IP and HTTP (port 8080) from anywhere.
-* **EC2 Instance:** Launches an Amazon Linux 2 EC2 instance.
-* **SSH Key Pair:** Integrates with an SSH key for secure access to the EC2 instance.
-* **Dynamic AMI Selection:** Automatically selects the latest Amazon Linux 2 AMI.
+*   **Custom VPC:** Deploys a custom VPC with public and private subnets across multiple availability zones for high availability.
+*   **EKS Cluster:** Provisions an EKS cluster with a managed node group.
+*   **Networking:** Sets up essential networking components like Internet Gateways, NAT Gateways, and route tables.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+*   [Terraform](https://www.terraform.io/downloads.html) installed
+*   [AWS CLI](https://aws.amazon.com/cli/) installed and configured with your credentials
+*   [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed
 
-* **[Terraform](https://developer.hashicorp.com/terraform/downloads):** Version 1.0.0 or higher.
-* **[AWS CLI](https://aws.amazon.com/cli/):** Configured with appropriate access keys.
-* **An AWS Account:** With sufficient permissions to create VPC, EC2, and related networking resources.
-* **An SSH Public Key:** You will need the content of your SSH public key (`~/.ssh/id_rsa.pub` or similar) to allow SSH access to the EC2 instance.
+## How to Use
 
-## Usage
+1.  **Clone the repository:**
+    ```sh
+    git clone https://github.com/austinkaruru/terraform-learn.git
+    cd terraform-learn
+    ```
 
-Follow these steps to deploy your EC2 instance and associated infrastructure.
+2.  **Initialize Terraform:**
+    ```sh
+    terraform init
+    ```
 
-### 1. Configure AWS Credentials
+3.  **Review the deployment plan:**
+    ```sh
+    terraform plan
+    ```
 
-Ensure your AWS CLI is configured with the necessary credentials. Terraform uses these credentials to interact with your AWS account. You can configure them using `aws configure` or by setting environment variables.
+4.  **Apply the configuration:**
+    ```sh
+    terraform apply
+    ```
 
-```bash
-aws configure
+## Resources Created
+
+This Terraform configuration will create the following resources in your AWS account:
+
+*   **AWS VPC:** A logically isolated virtual network.
+*   **Subnets:** Public and private subnets.
+*   **Internet Gateway & NAT Gateway:** For internet access.
+*   **EKS Cluster:** The Kubernetes control plane.
+*   **EKS Node Group:** The worker nodes for the cluster.
