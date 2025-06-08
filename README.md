@@ -1,4 +1,4 @@
-Terraform for AWS EKS Cluster
+# Terraform for AWS EKS Cluster
 
 This repository contains Terraform code to provision and manage a foundational AWS environment, including a Virtual Private Cloud (VPC) and an Elastic Kubernetes Service (EKS) cluster.
 
